@@ -18,7 +18,6 @@
       --sand:      #F5EDD6;
       --sand-dark: #E8D5B0;
       --sage:      #7FAF8A;
-      --sage-dim:  rgba(127,175,138,0.15);
       --driftwood: #8B7355;
       --text-dark: #1a2e3b;
       --text-mid:  #4a6275;
@@ -26,7 +25,6 @@
       --white:     #FFFFFF;
       --border:    rgba(27,79,114,0.12);
       --border-hover: rgba(46,134,171,0.3);
-
       --font-display: 'Cormorant Garamond', Georgia, serif;
       --font-body:    'Inter', sans-serif;
       --font-mono:    'Space Mono', monospace;
@@ -41,6 +39,24 @@
       font-size: 16px;
       line-height: 1.7;
       overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── GLOBAL FLOW CANVAS (behind everything) ── */
+    #globalCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* All content sits above the canvas */
+    nav, #hero, .wave-wrap, #about, #timeline, #research,
+    #projects, #publications, #contact, footer {
+      position: relative;
+      z-index: 1;
     }
 
     /* ── NAV ── */
@@ -48,12 +64,12 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      padding: 1.1rem 2.5rem;
+      padding: 1.1rem 3rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(240,247,255,0.88);
-      backdrop-filter: blur(14px);
+      background: rgba(240,247,255,0.82);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
 
@@ -83,35 +99,24 @@
     }
     .nav-links a:hover { color: var(--ocean-mid); }
 
-    /* ── HERO ── */
+    /* ── HERO — full viewport width ── */
     #hero {
-      position: relative;
+      width: 100%;
       min-height: 100vh;
       display: flex;
       align-items: center;
-      overflow: hidden;
-      background: linear-gradient(160deg, #daeef8 0%, #f0f7ff 45%, #f5edd6 100%);
-    }
-
-    #flowCanvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0.5;
+      background: linear-gradient(160deg, rgba(218,238,248,0.75) 0%, rgba(240,247,255,0.6) 45%, rgba(245,237,214,0.55) 100%);
     }
 
     .hero-inner {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 8rem 2.5rem 4rem;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 3rem;
-      align-items: center;
       width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 9rem 3rem 5rem;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 4rem;
+      align-items: center;
     }
 
     .hero-eyebrow {
@@ -127,7 +132,7 @@
 
     .hero-name {
       font-family: var(--font-display);
-      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-size: clamp(3.5rem, 7vw, 6rem);
       font-weight: 300;
       line-height: 1.0;
       letter-spacing: -0.01em;
@@ -139,9 +144,9 @@
 
     .hero-desc {
       font-family: var(--font-body);
-      font-size: 1rem;
+      font-size: 1.05rem;
       color: var(--text-mid);
-      max-width: 480px;
+      max-width: 520px;
       margin-bottom: 2rem;
       opacity: 0;
       animation: fadeUp 0.6s ease forwards 0.5s;
@@ -157,6 +162,70 @@
       animation: fadeUp 0.6s ease forwards 0.65s;
     }
 
+    /* ── PHOTO ── */
+    .hero-photo-wrap {
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.5s;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-photo-frame {
+      position: relative;
+      width: 300px;
+      height: 360px;
+    }
+
+    /* soft aura behind the photo */
+    .hero-photo-frame::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border-radius: 60% 40% 55% 45% / 50% 55% 45% 50%;
+      background: radial-gradient(ellipse, rgba(168,216,234,0.45) 0%, rgba(127,175,138,0.2) 50%, transparent 75%);
+      filter: blur(18px);
+      z-index: 0;
+    }
+
+    .hero-photo-frame img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 55% 45% 50% 50% / 45% 50% 50% 55%;
+      /* soft fade into background */
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 48%, black 55%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 48%, black 55%, transparent 100%);
+      filter: saturate(0.88) brightness(1.04);
+      box-shadow: 0 8px 40px rgba(27,79,114,0.12);
+    }
+
+    /* placeholder shown when no image is set */
+    .hero-photo-placeholder {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      border-radius: 55% 45% 50% 50% / 45% 50% 50% 55%;
+      background: linear-gradient(135deg, rgba(168,216,234,0.35) 0%, rgba(127,175,138,0.2) 100%);
+      border: 1.5px dashed rgba(46,134,171,0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--text-light);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .hero-photo-placeholder span { font-size: 2rem; opacity: 0.4; }
+
+    /* ── BUTTONS ── */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -177,7 +246,8 @@
     .btn-ghost {
       border: 1.5px solid rgba(27,79,114,0.25);
       color: var(--text-mid);
-      background: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(4px);
     }
     .btn-ghost:hover {
       border-color: var(--ocean-mid);
@@ -185,13 +255,7 @@
       background: rgba(255,255,255,0.9);
     }
 
-    /* ── SECTIONS ── */
-    section {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 5rem 2.5rem;
-    }
-
+    /* ── GENERIC SECTION ── */
     .section-label {
       font-family: var(--font-mono);
       font-size: 0.68rem;
@@ -211,15 +275,15 @@
     }
 
     /* ── ABOUT ── */
-    #about { background: var(--white); max-width: 100%; padding: 5rem 0; }
-    #about .about-inner { max-width: 860px; margin: 0 auto; padding: 0 2.5rem; }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 3rem;
-      align-items: start;
+    #about {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(10px);
+      max-width: 100%;
+      padding: 5rem 0;
     }
+    #about .about-inner { max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
+
+    .about-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 3rem; align-items: start; }
 
     .about-text p { color: var(--text-mid); margin-bottom: 1rem; font-size: 0.96rem; }
     .about-text p strong { color: var(--text-dark); font-weight: 500; }
@@ -228,10 +292,11 @@
 
     .meta-card {
       padding: 1rem 1.2rem;
-      background: var(--foam);
+      background: rgba(240,247,255,0.85);
       border: 1px solid var(--border);
       border-radius: 10px;
       border-left: 3px solid var(--sky);
+      backdrop-filter: blur(6px);
     }
 
     .meta-label {
@@ -243,45 +308,37 @@
       margin-bottom: 0.25rem;
     }
 
-    .meta-value { font-family: var(--font-body); font-size: 0.88rem; color: var(--text-dark); font-weight: 500; }
+    .meta-value { font-size: 0.88rem; color: var(--text-dark); font-weight: 500; }
     .meta-sub { font-size: 0.77rem; color: var(--text-light); margin-top: 0.1rem; }
 
     /* ── TIMELINE ── */
-    #timeline { background: var(--foam); max-width: 100%; padding: 5rem 0; }
-    #timeline .timeline-inner { max-width: 860px; margin: 0 auto; padding: 0 2.5rem; }
-
-    .tl-track {
-      position: relative;
-      padding-left: 2rem;
+    #timeline {
+      background: rgba(240,247,255,0.75);
+      backdrop-filter: blur(10px);
+      max-width: 100%;
+      padding: 5rem 0;
     }
+    #timeline .timeline-inner { max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
 
-    /* vertical line */
+    .tl-track { position: relative; padding-left: 2rem; }
+
     .tl-track::before {
       content: '';
       position: absolute;
-      left: 0;
-      top: 8px;
-      bottom: 8px;
+      left: 0; top: 8px; bottom: 8px;
       width: 2px;
       background: linear-gradient(to bottom, var(--sky), var(--sand-dark));
       border-radius: 2px;
     }
 
-    .tl-item {
-      position: relative;
-      padding: 0 0 2.2rem 1.8rem;
-    }
-
+    .tl-item { position: relative; padding: 0 0 2.2rem 1.8rem; }
     .tl-item:last-child { padding-bottom: 0; }
 
-    /* dot on the line */
     .tl-item::before {
       content: '';
       position: absolute;
-      left: -2rem;
-      top: 6px;
-      width: 10px;
-      height: 10px;
+      left: -2rem; top: 6px;
+      width: 10px; height: 10px;
       border-radius: 50%;
       background: var(--white);
       border: 2px solid var(--ocean-mid);
@@ -291,46 +348,14 @@
 
     .tl-item.tl-current::before {
       background: var(--ocean-mid);
-      border-color: var(--ocean-mid);
       box-shadow: 0 0 0 3px rgba(46,134,171,0.2);
     }
 
-    .tl-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 0.15rem;
-    }
-
-    .tl-title {
-      font-family: var(--font-display);
-      font-size: 1.05rem;
-      font-weight: 500;
-      color: var(--ocean);
-      line-height: 1.3;
-    }
-
-    .tl-date {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--text-light);
-      white-space: nowrap;
-    }
-
-    .tl-org {
-      font-size: 0.8rem;
-      color: var(--sage);
-      font-weight: 500;
-      margin-bottom: 0.4rem;
-    }
-
-    .tl-desc {
-      font-size: 0.85rem;
-      color: var(--text-mid);
-      line-height: 1.65;
-    }
+    .tl-header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.15rem; }
+    .tl-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; color: var(--ocean); line-height: 1.3; }
+    .tl-date { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-light); white-space: nowrap; }
+    .tl-org { font-size: 0.8rem; color: var(--sage); font-weight: 500; margin-bottom: 0.4rem; }
+    .tl-desc { font-size: 0.85rem; color: var(--text-mid); line-height: 1.65; }
 
     .tl-badge {
       display: inline-block;
@@ -342,20 +367,28 @@
       border-radius: 20px;
       margin-bottom: 0.5rem;
     }
-
-    .tl-badge.industry  { background: var(--ocean); }
-    .tl-badge.research  { background: var(--sage); }
-    .tl-badge.teaching  { background: var(--driftwood); }
-    .tl-badge.fellowship{ background: var(--ocean-mid); }
+    .tl-badge.industry   { background: var(--ocean); }
+    .tl-badge.research   { background: var(--sage); }
+    .tl-badge.teaching   { background: var(--driftwood); }
+    .tl-badge.fellowship { background: var(--ocean-mid); }
 
     /* ── RESEARCH ── */
+    #research {
+      background: rgba(240,247,255,0.78);
+      backdrop-filter: blur(10px);
+      max-width: 100%;
+      padding: 5rem 0;
+    }
+    #research .research-inner { max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
+
     .research-list { display: flex; flex-direction: column; gap: 1.4rem; }
 
     .research-card {
       padding: 1.6rem 1.8rem;
-      background: var(--white);
+      background: rgba(255,255,255,0.85);
       border: 1px solid var(--border);
       border-radius: 12px;
+      backdrop-filter: blur(6px);
       transition: border-color 0.2s, box-shadow 0.2s;
       position: relative;
       overflow: hidden;
@@ -370,107 +403,81 @@
       border-radius: 4px 0 0 4px;
     }
 
-    .research-card:hover {
-      border-color: var(--border-hover);
-      box-shadow: 0 4px 24px rgba(27,79,114,0.08);
-    }
+    .research-card:hover { border-color: var(--border-hover); box-shadow: 0 4px 24px rgba(27,79,114,0.08); }
 
-    .research-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .research-title {
-      font-family: var(--font-display);
-      font-size: 1.15rem;
-      font-weight: 500;
-      color: var(--ocean);
-      line-height: 1.3;
-    }
-
-    .research-date {
-      font-family: var(--font-mono);
-      font-size: 0.67rem;
-      color: var(--text-light);
-      white-space: nowrap;
-      padding-top: 0.2rem;
-    }
-
+    .research-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.35rem; }
+    .research-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; color: var(--ocean); line-height: 1.3; }
+    .research-date { font-family: var(--font-mono); font-size: 0.67rem; color: var(--text-light); white-space: nowrap; padding-top: 0.2rem; }
     .research-advisor { font-size: 0.8rem; color: var(--sage); margin-bottom: 0.8rem; font-weight: 500; }
-
     .research-desc { font-size: 0.88rem; color: var(--text-mid); line-height: 1.7; }
     .research-desc strong { color: var(--text-dark); font-weight: 500; }
     .research-desc a { color: var(--ocean-mid); text-decoration: none; }
     .research-desc a:hover { text-decoration: underline; }
 
     .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
-
     .tag {
       font-family: var(--font-mono);
       font-size: 0.62rem;
       letter-spacing: 0.06em;
       color: var(--ocean-mid);
-      background: rgba(168,216,234,0.22);
+      background: rgba(168,216,234,0.28);
       border: 1px solid rgba(46,134,171,0.2);
       padding: 0.18rem 0.55rem;
       border-radius: 20px;
     }
 
     /* ── PROJECTS ── */
-    #projects { background: var(--sand); max-width: 100%; padding: 5rem 0; }
-    #projects .projects-inner { max-width: 860px; margin: 0 auto; padding: 0 2.5rem; }
+    #projects {
+      background: rgba(245,237,214,0.7);
+      backdrop-filter: blur(10px);
+      max-width: 100%;
+      padding: 5rem 0;
+    }
+    #projects .projects-inner { max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
 
     .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
 
     .project-card {
       padding: 1.5rem 1.6rem;
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.72);
       border: 1px solid rgba(139,115,85,0.15);
       border-radius: 12px;
+      backdrop-filter: blur(6px);
       transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
       text-decoration: none;
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
-      backdrop-filter: blur(4px);
     }
 
     .project-card:hover {
       border-color: rgba(46,134,171,0.3);
-      background: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.92);
       box-shadow: 0 6px 24px rgba(27,79,114,0.1);
       transform: translateY(-3px);
     }
 
     .project-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
     .project-icon { font-size: 1.4rem; line-height: 1; }
-
-    .project-arrow {
-      font-size: 1rem;
-      color: var(--text-light);
-      transition: color 0.2s, transform 0.2s;
-    }
+    .project-arrow { font-size: 1rem; color: var(--text-light); transition: color 0.2s, transform 0.2s; }
     .project-card:hover .project-arrow { color: var(--ocean-mid); transform: translate(2px, -2px); }
-
-    .project-name {
-      font-family: var(--font-display);
-      font-size: 1.05rem;
-      font-weight: 500;
-      color: var(--ocean);
-      line-height: 1.3;
-    }
-
+    .project-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; color: var(--ocean); line-height: 1.3; }
     .project-desc { font-size: 0.83rem; color: var(--text-mid); line-height: 1.65; flex: 1; }
 
     /* ── PUBLICATIONS ── */
+    #publications {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(10px);
+      max-width: 100%;
+      padding: 5rem 0;
+    }
+    #publications .pub-inner { max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
+
     .pub-list { display: flex; flex-direction: column; gap: 1.1rem; }
 
     .pub-item {
       padding: 1.2rem 1.5rem;
-      background: var(--white);
+      background: rgba(255,255,255,0.85);
       border: 1px solid var(--border);
       border-radius: 10px;
       display: grid;
@@ -492,73 +499,38 @@
       white-space: nowrap;
       margin-top: 0.15rem;
     }
-
     .pub-badge.talk   { background: var(--sage); }
     .pub-badge.poster { background: var(--driftwood); }
 
-    .pub-title {
-      font-family: var(--font-display);
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--text-dark);
-      margin-bottom: 0.2rem;
-      line-height: 1.4;
-    }
-
+    .pub-title { font-family: var(--font-display); font-size: 1rem; font-weight: 500; color: var(--text-dark); margin-bottom: 0.2rem; line-height: 1.4; }
     .pub-meta { font-size: 0.78rem; color: var(--text-light); }
     .pub-meta a { color: var(--ocean-mid); text-decoration: none; }
     .pub-meta a:hover { text-decoration: underline; }
 
     /* ── CONTACT ── */
     #contact {
-      background: linear-gradient(160deg, #1B4F72 0%, #2E86AB 60%, #4a9fb5 100%);
+      background: linear-gradient(160deg, rgba(27,79,114,0.92) 0%, rgba(46,134,171,0.9) 60%, rgba(74,159,181,0.9) 100%);
+      backdrop-filter: blur(10px);
       max-width: 100%;
-      padding: 6rem 2.5rem;
+      padding: 6rem 3rem;
       text-align: center;
     }
 
     .contact-inner { max-width: 560px; margin: 0 auto; }
 
-    .contact-label {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.18em;
-      color: var(--sky);
-      text-transform: uppercase;
-      margin-bottom: 0.6rem;
-      display: block;
-    }
-
-    .contact-title {
-      font-family: var(--font-display);
-      font-size: clamp(2.2rem, 5vw, 3.5rem);
-      font-weight: 300;
-      color: var(--white);
-      margin-bottom: 1rem;
-    }
-
+    .contact-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.18em; color: var(--sky); text-transform: uppercase; margin-bottom: 0.6rem; display: block; }
+    .contact-title { font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 300; color: var(--white); margin-bottom: 1rem; }
     .contact-sub { font-size: 0.95rem; color: rgba(240,247,255,0.75); margin-bottom: 2.2rem; line-height: 1.7; }
-
-    .contact-email {
-      font-family: var(--font-mono);
-      font-size: 1rem;
-      color: var(--sand);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(245,237,214,0.4);
-      padding-bottom: 2px;
-      transition: border-color 0.2s;
-    }
+    .contact-email { font-family: var(--font-mono); font-size: 1rem; color: var(--sand); text-decoration: none; border-bottom: 1px solid rgba(245,237,214,0.4); padding-bottom: 2px; transition: border-color 0.2s; }
     .contact-email:hover { border-color: var(--sand); }
-
     .social-row { display: flex; justify-content: center; gap: 1.5rem; margin-top: 2rem; }
-
-    .social-link { font-family: var(--font-body); font-size: 0.83rem; color: rgba(240,247,255,0.65); text-decoration: none; transition: color 0.2s; }
+    .social-link { font-size: 0.83rem; color: rgba(240,247,255,0.65); text-decoration: none; transition: color 0.2s; }
     .social-link:hover { color: var(--white); }
 
     /* ── FOOTER ── */
     footer {
-      background: var(--ocean);
-      padding: 1.2rem 2.5rem;
+      background: rgba(27,79,114,0.95);
+      padding: 1.2rem 3rem;
       text-align: center;
       font-family: var(--font-mono);
       font-size: 0.66rem;
@@ -566,9 +538,7 @@
       letter-spacing: 0.08em;
     }
 
-    #research { background: var(--foam); }
-    #publications { background: var(--white); }
-
+    /* ── WAVE ── */
     .wave-wrap { overflow: hidden; line-height: 0; }
 
     /* ── ANIMATIONS ── */
@@ -581,12 +551,13 @@
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
-      .about-grid    { grid-template-columns: 1fr; }
+    @media (max-width: 860px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-photo-wrap { display: none; }
+      .about-grid { grid-template-columns: 1fr; }
       .projects-grid { grid-template-columns: 1fr; }
-      .hero-inner    { grid-template-columns: 1fr; }
-      .nav-links     { display: none; }
-      .tl-header     { flex-direction: column; gap: 0.2rem; }
+      .nav-links { display: none; }
+      .tl-header { flex-direction: column; gap: 0.2rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -595,6 +566,9 @@
   </style>
 </head>
 <body>
+
+<!-- GLOBAL FLOW CANVAS -->
+<canvas id="globalCanvas"></canvas>
 
 <!-- NAV -->
 <nav>
@@ -611,7 +585,6 @@
 
 <!-- HERO -->
 <section id="hero">
-  <canvas id="flowCanvas"></canvas>
   <div class="hero-inner">
     <div class="hero-text">
       <p class="hero-eyebrow">physics-informed ML · inverse problems · surrogate modeling</p>
@@ -628,13 +601,23 @@
         <a class="btn btn-ghost" href="https://github.com/k-mundra" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
+
+    <!-- PHOTO: replace the placeholder div with an <img> tag when ready -->
+    <!-- To use: delete the .hero-photo-placeholder div and uncomment the img tag below -->
+    
+    <div class="hero-photo-wrap">
+      <div class="hero-photo-frame">
+          <img src="kashvi_pfp.png" alt="Kashvi Mundra" />
+      </div>
+    </div>
+
   </div>
 </section>
 
 <!-- WAVE: hero → about -->
-<div class="wave-wrap" style="background:linear-gradient(160deg,#daeef8 0%,#f0f7ff 45%,#f5edd6 100%);">
+<div class="wave-wrap" style="background:rgba(218,238,248,0.4);">
   <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#ffffff"/>
+    <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.82)"/>
   </svg>
 </div>
 
@@ -645,26 +628,10 @@
     <h2 class="section-title reveal">Background</h2>
     <div class="about-grid">
       <div class="about-text reveal">
-        <p>
-          I'm a first-year MS student at Georgia Tech's School of Computational Science
-          & Engineering, where I work on <strong>physics-informed machine learning and inverse problems</strong>.
-        </p>
-        <p>
-          My current research focuses on building latent-space inverse solvers for
-          Navier-Stokes flows — inferring initial conditions from final-state observations
-          using ML surrogates and global optimization. Before this, I developed
-          <strong>multifidelity neural surrogate models</strong> using a Kennedy-O'Hagan
-          autoregressive framework extended with neural networks.
-        </p>
-        <p>
-          This summer I'm at <strong>Boom Supersonic</strong> as an Applied ML Engineering intern,
-          building surrogate models for 3D turbomachinery compressor CFD by evaluating
-          multiple SciML architectures.
-        </p>
-        <p>
-          I'm also a <strong>Contrary Research Fellow</strong> (1 of ~12 from ~300 applicants),
-          where I analyze frontier deep tech companies.
-        </p>
+        <p>I'm a first-year MS student at Georgia Tech's School of Computational Science & Engineering, where I work on <strong>physics-informed machine learning and inverse problems</strong>.</p>
+        <p>My current research focuses on building latent-space inverse solvers for Navier-Stokes flows — inferring initial conditions from final-state observations using ML surrogates and global optimization. Before this, I developed <strong>multifidelity neural surrogate models</strong> using a Kennedy-O'Hagan autoregressive framework extended with neural networks.</p>
+        <p>This summer I'm at <strong>Boom Supersonic</strong> as an Applied ML Engineering intern, building surrogate models for 3D turbomachinery compressor CFD by evaluating multiple SciML architectures.</p>
+        <p>I'm also a <strong>Contrary Research Fellow</strong> (1 of ~12 from ~300 applicants), where I analyze frontier deep tech companies.</p>
       </div>
       <div class="about-cards reveal">
         <div class="meta-card">
@@ -693,9 +660,9 @@
 </div>
 
 <!-- WAVE: about → timeline -->
-<div class="wave-wrap" style="background:#ffffff;">
+<div class="wave-wrap" style="background:rgba(255,255,255,0.82);">
   <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0,20 C480,55 960,0 1440,35 L1440,60 L0,60 Z" fill="#f0f7ff"/>
+    <path d="M0,20 C480,55 960,0 1440,35 L1440,60 L0,60 Z" fill="rgba(240,247,255,0.75)"/>
   </svg>
 </div>
 
@@ -704,7 +671,6 @@
   <div class="timeline-inner">
     <p class="section-label reveal">experience</p>
     <h2 class="section-title reveal">Timeline</h2>
-
     <div class="tl-track">
 
       <div class="tl-item tl-current reveal">
@@ -747,7 +713,7 @@
         <div class="tl-desc">Led recitation sections and office hours for undergraduate Engineering Statics. Full tuition support.</div>
       </div>
 
-      <div class="tl-item reveal">
+      <div class="tl-item tl-current reveal">
         <div class="tl-header">
           <div class="tl-title">Research Assistant — Inverse Problems & SciML</div>
           <div class="tl-date">Jan 2026 – Present</div>
@@ -764,7 +730,7 @@
         </div>
         <div class="tl-org">Aerospace Computational Engineering Lab · Dr. Elizabeth Qian</div>
         <span class="tl-badge research">Research</span>
-        <div class="tl-desc">Developed Kennedy-O'Hagan-based multifidelity neural surrogates achieving up to 90% generalization error reduction, as compared to single-fidelity neural surrogates. PURA Salary Research Grant recipient.</div>
+        <div class="tl-desc">Developed Kennedy-O'Hagan-based multifidelity neural surrogates achieving up to 90% generalization error reduction vs. single-fidelity baseline. PURA Salary Research Grant recipient.</div>
       </div>
 
       <div class="tl-item reveal">
@@ -802,67 +768,55 @@
 </div>
 
 <!-- WAVE: timeline → research -->
-<div class="wave-wrap" style="background:#f0f7ff;">
+<div class="wave-wrap" style="background:rgba(240,247,255,0.75);">
   <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0,40 C360,10 1080,55 1440,20 L1440,60 L0,60 Z" fill="#f0f7ff"/>
+    <path d="M0,40 C360,10 1080,55 1440,20 L1440,60 L0,60 Z" fill="rgba(240,247,255,0.78)"/>
   </svg>
 </div>
 
 <!-- RESEARCH -->
 <section id="research">
-  <p class="section-label reveal">research</p>
-  <h2 class="section-title reveal">Research</h2>
-  <div class="research-list">
+  <div class="research-inner">
+    <p class="section-label reveal">research</p>
+    <h2 class="section-title reveal">Research</h2>
+    <div class="research-list">
 
-    <div class="research-card reveal">
-      <div class="research-header">
-        <div class="research-title">Latent-Space Inverse Solver for Navier-Stokes Flows</div>
-        <div class="research-date">Jan 2026 – Present</div>
+      <div class="research-card reveal">
+        <div class="research-header">
+          <div class="research-title">Latent-Space Inverse Solver for Navier-Stokes Flows</div>
+          <div class="research-date">Jan 2026 – Present</div>
+        </div>
+        <div class="research-advisor">Pestourie Group · Georgia Tech CSE</div>
+        <div class="research-desc">
+          Developing a <strong>ViT-VAE with 8-dimensional latent space</strong> to infer initial conditions from final-state flow observations. The pipeline combines a neural surrogate with global optimization to solve the inverse problem without adjoint gradients. Training data generated with <strong>Dedalus</strong>.
+        </div>
+        <div class="tag-row">
+          <span class="tag">Inverse Problems</span><span class="tag">ViT-VAE</span><span class="tag">Navier-Stokes</span><span class="tag">Bayesian Optimization</span><span class="tag">Dedalus</span><span class="tag">PyTorch</span>
+        </div>
       </div>
-      <div class="research-advisor">Pestourie Group · Georgia Tech CSE</div>
-      <div class="research-desc">
-        Developing a <strong>ViT-VAE with 8-dimensional latent space</strong> to infer initial
-        conditions from final-state flow observations. The pipeline combines a neural surrogate with global optimization to solve the inverse problem without adjoint gradients. Training data generated with <strong>Dedalus</strong>.
+
+      <div class="research-card reveal">
+        <div class="research-header">
+          <div class="research-title">Multifidelity Neural Surrogate Modeling</div>
+          <div class="research-date">Aug 2024 – Feb 2026</div>
+        </div>
+        <div class="research-advisor">Aerospace Computational Engineering Lab · Dr. Elizabeth Qian</div>
+        <div class="research-desc">
+          Developed multifidelity neural network models using a novel <strong>Kennedy-O'Hagan autoregressive framework</strong> extended with neural networks, achieving up to <strong>90% reduction in generalization error</strong> versus single-fidelity baseline. Validated on short column and Forrester benchmarks. PURA Salary Research Grant recipient; presented at Georgia Scientific Computing Symposium (<a href="https://drive.google.com/file/d/17zWj5pXz6cJD2XuK0PosuUgpjAeNck5Y/view?usp=sharing" target="_blank" rel="noopener">poster</a>) and GT Undergraduate Research Symposium (talk).
+        </div>
+        <div class="tag-row">
+          <span class="tag">Multifidelity</span><span class="tag">Kennedy-O'Hagan</span><span class="tag">Neural Surrogates</span><span class="tag">UQ</span><span class="tag">JAX</span>
+        </div>
       </div>
-      <div class="tag-row">
-        <span class="tag">Inverse Problems</span>
-        <span class="tag">ViT-VAE</span>
-        <span class="tag">Navier-Stokes</span>
-        <span class="tag">Bayesian Optimization</span>
-        <span class="tag">Dedalus</span>
-        <span class="tag">PyTorch</span>
-      </div>
+
     </div>
-
-    <div class="research-card reveal">
-      <div class="research-header">
-        <div class="research-title">Multifidelity Neural Surrogate Modeling</div>
-        <div class="research-date">Aug 2024 – Feb 2026</div>
-      </div>
-      <div class="research-advisor">Aerospace Computational Engineering Lab · Dr. Elizabeth Qian</div>
-      <div class="research-desc">
-        Developed multifidelity neural network models using a novel
-        <strong>Kennedy-O'Hagan autoregressive framework</strong> extended with neural networks,
-        achieving up to <strong>90% reduction in generalization error</strong> versus single-fidelity
-        baseline. Validated on short column and Forrester benchmarks.
-        PURA Salary Research Grant recipient; presented at Georgia Scientific Computing Symposium (<a href="https://drive.google.com/file/d/17zWj5pXz6cJD2XuK0PosuUgpjAeNck5Y/view?usp=sharing" target="_blank" rel="noopener">poster</a>) and GT Undergraduate Research Symposium (talk).
-      </div>
-      <div class="tag-row">
-        <span class="tag">Multifidelity</span>
-        <span class="tag">Kennedy-O'Hagan</span>
-        <span class="tag">Neural Surrogates</span>
-        <span class="tag">UQ</span>
-        <span class="tag">JAX</span>
-      </div>
-    </div>
-
   </div>
 </section>
 
 <!-- WAVE: research → projects -->
-<div class="wave-wrap" style="background:#f0f7ff;">
+<div class="wave-wrap" style="background:rgba(240,247,255,0.78);">
   <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0,40 C360,10 1080,55 1440,20 L1440,60 L0,60 Z" fill="#f5edd6"/>
+    <path d="M0,40 C360,10 1080,55 1440,20 L1440,60 L0,60 Z" fill="rgba(245,237,214,0.7)"/>
   </svg>
 </div>
 
@@ -874,76 +828,31 @@
     <div class="projects-grid">
 
       <a class="project-card reveal" href="https://github.com/iaziz6/Digital-Twin-for-Data-Center-Cooling" target="_blank" rel="noopener">
-        <div class="project-card-header">
-          <span class="project-icon">🌡️</span>
-          <span class="project-arrow">↗</span>
-        </div>
+        <div class="project-card-header"><span class="project-icon">🌡️</span><span class="project-arrow">↗</span></div>
         <div class="project-name">Digital Twin for Data Center Cooling</div>
-        <div class="project-desc">
-          Physics-regularized 3D U-Net surrogate predicting full volumetric temperature
-          and velocity fields from CFD data, with Navier-Stokes soft PDE constraints
-          and uncertainty quantification via Monte Carlo Dropout and Deep Ensembles.
-        </div>
-        <div class="tag-row">
-          <span class="tag">3D U-Net</span>
-          <span class="tag">Physics-informed</span>
-          <span class="tag">UQ</span>
-          <span class="tag">PyTorch</span>
-        </div>
+        <div class="project-desc">Physics-regularized 3D U-Net surrogate predicting full volumetric temperature and velocity fields from CFD data, with Navier-Stokes soft PDE constraints and uncertainty quantification via Monte Carlo Dropout and Deep Ensembles.</div>
+        <div class="tag-row"><span class="tag">3D U-Net</span><span class="tag">Physics-informed</span><span class="tag">UQ</span><span class="tag">PyTorch</span></div>
       </a>
 
       <a class="project-card reveal" href="#" target="_blank" rel="noopener">
-        <div class="project-card-header">
-          <span class="project-icon">🦠</span>
-          <span class="project-arrow">↗</span>
-        </div>
+        <div class="project-card-header"><span class="project-icon">🦠</span><span class="project-arrow">↗</span></div>
         <div class="project-name">Space Biofilms: Microgravity ML Pipeline</div>
-        <div class="project-desc">
-          Experimental and modeling design for Earth-to-microgravity correlation.
-          Ground-to-flight predictive ML pipeline (R²=0.96) using ConvLSTM and
-          Random Forest models; presented at GT Scientific ML Symposium.
-        </div>
-        <div class="tag-row">
-          <span class="tag">ConvLSTM</span>
-          <span class="tag">Random Forest</span>
-          <span class="tag">Microgravity</span>
-        </div>
+        <div class="project-desc">Experimental and modeling design for Earth-to-microgravity correlation. Ground-to-flight predictive ML pipeline (R²=0.96) using ConvLSTM and Random Forest models; presented at GT Scientific ML Symposium.</div>
+        <div class="tag-row"><span class="tag">ConvLSTM</span><span class="tag">Random Forest</span><span class="tag">Microgravity</span></div>
       </a>
 
       <a class="project-card reveal" href="#" target="_blank" rel="noopener">
-        <div class="project-card-header">
-          <span class="project-icon">🚀</span>
-          <span class="project-arrow">↗</span>
-        </div>
+        <div class="project-card-header"><span class="project-icon">🚀</span><span class="project-arrow">↗</span></div>
         <div class="project-name">MIRAGE Mars Orbiter — C&amp;DH Lead</div>
-        <div class="project-desc">
-          Full pre-phase comms and command/data handling system for a 3-year Mars
-          orbiter mission. Developed MATLAB/Python pipelines and RF architecture;
-          optimized C/N ratios, data rates, and link budget under mission constraints.
-        </div>
-        <div class="tag-row">
-          <span class="tag">Systems Design</span>
-          <span class="tag">RF/Comms</span>
-          <span class="tag">MATLAB</span>
-        </div>
+        <div class="project-desc">Full pre-phase comms and command/data handling system for a 3-year Mars orbiter mission. Developed MATLAB/Python pipelines and RF architecture; optimized C/N ratios, data rates, and link budget under mission constraints.</div>
+        <div class="tag-row"><span class="tag">Systems Design</span><span class="tag">RF/Comms</span><span class="tag">MATLAB</span></div>
       </a>
 
       <a class="project-card reveal" href="https://doi.org/10.3847/1538-4365/ac2203" target="_blank" rel="noopener">
-        <div class="project-card-header">
-          <span class="project-icon">☀️</span>
-          <span class="project-arrow">↗</span>
-        </div>
+        <div class="project-card-header"><span class="project-icon">☀️</span><span class="project-arrow">↗</span></div>
         <div class="project-name">Solar CME Geoeffectiveness Study</div>
-        <div class="project-desc">
-          First-authored published study examining coronal mass ejection storm risk
-          via H-α imagery and magnetic field orientation analysis.
-          Published in <em>The Astrophysical Journal Supplement Series</em>, 2021.
-        </div>
-        <div class="tag-row">
-          <span class="tag">Solar Physics</span>
-          <span class="tag">First Author</span>
-          <span class="tag">ApJS 2021</span>
-        </div>
+        <div class="project-desc">First-authored published study examining coronal mass ejection storm risk via H-α imagery and magnetic field orientation analysis. Published in <em>The Astrophysical Journal Supplement Series</em>, 2021.</div>
+        <div class="tag-row"><span class="tag">Solar Physics</span><span class="tag">First Author</span><span class="tag">ApJS 2021</span></div>
       </a>
 
     </div>
@@ -951,57 +860,51 @@
 </div>
 
 <!-- WAVE: projects → publications -->
-<div class="wave-wrap" style="background:#f5edd6;">
+<div class="wave-wrap" style="background:rgba(245,237,214,0.7);">
   <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0,15 C500,55 900,5 1440,40 L1440,60 L0,60 Z" fill="#ffffff"/>
+    <path d="M0,15 C500,55 900,5 1440,40 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.82)"/>
   </svg>
 </div>
 
 <!-- PUBLICATIONS -->
-<section id="publications">
-  <p class="section-label reveal">publications & presentations</p>
-  <h2 class="section-title reveal">Publications & Presentations</h2>
-  <div class="pub-list">
+<div id="publications">
+  <div class="pub-inner">
+    <p class="section-label reveal">publications & presentations</p>
+    <h2 class="section-title reveal">Publications & Presentations</h2>
+    <div class="pub-list">
 
-    <div class="pub-item reveal">
-      <span class="pub-badge">PAPER</span>
-      <div>
-        <div class="pub-title">Using CME Progenitors to Assess CME Geoeffectiveness</div>
-        <div class="pub-meta">
-          <strong>Kashvi Mundra</strong> et al. ·
-          <em>The Astrophysical Journal Supplement Series</em>, 257, 33 · 2021 ·
-          <a href="https://doi.org/10.3847/1538-4365/ac2203" target="_blank" rel="noopener">doi:10.3847/1538-4365/ac2203</a>
+      <div class="pub-item reveal">
+        <span class="pub-badge">PAPER</span>
+        <div>
+          <div class="pub-title">Using CME Progenitors to Assess CME Geoeffectiveness</div>
+          <div class="pub-meta"><strong>Kashvi Mundra</strong> et al. · <em>The Astrophysical Journal Supplement Series</em>, 257, 33 · 2021 · <a href="https://doi.org/10.3847/1538-4365/ac2203" target="_blank" rel="noopener">doi:10.3847/1538-4365/ac2203</a></div>
         </div>
       </div>
-    </div>
 
-    <div class="pub-item reveal">
-      <span class="pub-badge talk">TALK</span>
-      <div>
-        <div class="pub-title">Multifidelity Neural Surrogate Modeling with Kennedy-O'Hagan Extensions</div>
-        <div class="pub-meta">
-          Kashvi Mundra · Georgia Scientific Computing Symposium · Atlanta, GA · 2025
+      <div class="pub-item reveal">
+        <span class="pub-badge talk">TALK</span>
+        <div>
+          <div class="pub-title">Multifidelity Neural Surrogate Modeling with Kennedy-O'Hagan Extensions</div>
+          <div class="pub-meta">Kashvi Mundra · Georgia Scientific Computing Symposium · Atlanta, GA · 2025</div>
         </div>
       </div>
-    </div>
 
-    <div class="pub-item reveal">
-      <span class="pub-badge poster">POSTER</span>
-      <div>
-        <div class="pub-title">Multifidelity Neural Surrogate Modeling with Kennedy-O'Hagan Extensions</div>
-        <div class="pub-meta">
-          Kashvi Mundra · Georgia Tech Undergraduate Research Symposium · Atlanta, GA · 2025
+      <div class="pub-item reveal">
+        <span class="pub-badge poster">POSTER</span>
+        <div>
+          <div class="pub-title">Multifidelity Neural Surrogate Modeling with Kennedy-O'Hagan Extensions</div>
+          <div class="pub-meta">Kashvi Mundra · Georgia Tech Undergraduate Research Symposium · Atlanta, GA · 2025</div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
-</section>
+</div>
 
 <!-- WAVE: publications → contact -->
-<div class="wave-wrap" style="background:#ffffff;">
+<div class="wave-wrap" style="background:rgba(255,255,255,0.82);">
   <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0,40 C360,80 1080,0 1440,50 L1440,80 L0,80 Z" fill="#1B4F72"/>
+    <path d="M0,40 C360,80 1080,0 1440,50 L1440,80 L0,80 Z" fill="rgba(27,79,114,0.92)"/>
   </svg>
 </div>
 
@@ -1010,10 +913,7 @@
   <div class="contact-inner reveal">
     <span class="contact-label">contact</span>
     <h2 class="contact-title">Let's talk.</h2>
-    <p class="contact-sub">
-      I'm open to research collaborations, internship opportunities, and conversations
-      about SciML, inverse problems, and scientific computing.
-    </p>
+    <p class="contact-sub">I'm open to research collaborations, internship opportunities, and conversations about SciML, inverse problems, and scientific computing.</p>
     <a class="contact-email" href="mailto:kashvi@gatech.edu">kashvi@gatech.edu</a>
     <div class="social-row">
       <a class="social-link" href="https://linkedin.com/in/kashvi-mundra" target="_blank" rel="noopener">LinkedIn ↗</a>
@@ -1026,25 +926,26 @@
 <footer>kashvi mundra · georgia tech cse · 2026</footer>
 
 <script>
+// ── GLOBAL FLOW CANVAS (fixed, behind all content) ──
 (function() {
-  const canvas = document.getElementById('flowCanvas');
+  const canvas = document.getElementById('globalCanvas');
   const ctx = canvas.getContext('2d');
   let W, H, particles = [];
-  const N = 140;
+  const N = 220;
 
   function resize() {
-    W = canvas.width  = canvas.offsetWidth;
-    H = canvas.height = canvas.offsetHeight;
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
   }
 
   function noise(x, y, t) {
-    const s = 0.0025;
-    return Math.sin(x * s * 2 + t * 0.18) * Math.cos(y * s + t * 0.12)
-         + Math.sin(x * s * 0.8 - y * s * 1.3 + t * 0.15) * 0.5;
+    const s = 0.0022;
+    return Math.sin(x * s * 2.1 + t * 0.17) * Math.cos(y * s + t * 0.11)
+         + Math.sin(x * s * 0.75 - y * s * 1.2 + t * 0.14) * 0.55;
   }
 
   function curl(x, y, t) {
-    const eps = 2;
+    const eps = 2.5;
     return {
       vx:  (noise(x, y + eps, t) - noise(x, y - eps, t)) / (2 * eps),
       vy: -(noise(x + eps, y, t) - noise(x - eps, y, t)) / (2 * eps)
@@ -1055,9 +956,9 @@
     return {
       x: Math.random() * W,
       y: Math.random() * H,
-      life: Math.random() * 200 + 80,
-      age: Math.floor(Math.random() * 100),
-      speed: 0.5 + Math.random() * 0.8
+      life: Math.random() * 220 + 100,
+      age: Math.floor(Math.random() * 120),
+      speed: 0.55 + Math.random() * 0.9
     };
   }
 
@@ -1065,27 +966,35 @@
 
   let t = 0;
   function draw() {
-    ctx.fillStyle = 'rgba(218,238,248,0.12)';
+    // very gentle fade — trails persist a bit for flow feel
+    ctx.fillStyle = 'rgba(240,247,255,0.055)';
     ctx.fillRect(0, 0, W, H);
+
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
       p.age++;
       if (p.age > p.life) { particles[i] = rp(); continue; }
+
       const { vx, vy } = curl(p.x, p.y, t);
       const mag = Math.sqrt(vx*vx + vy*vy) || 1;
       const nx = (vx / mag) * p.speed;
       const ny = (vy / mag) * p.speed;
-      const alpha = Math.min(p.age / 40, 1) * (1 - p.age / p.life) * 0.5;
-      const hue = 195 + (vx / mag) * 25;
-      const sat = 45 + Math.abs(vy / mag) * 20;
-      ctx.strokeStyle = `hsla(${hue},${sat}%,52%,${alpha})`;
-      ctx.lineWidth = 1.1;
+
+      // slightly brighter / bolder alpha
+      const alpha = Math.min(p.age / 35, 1) * (1 - p.age / p.life) * 0.72;
+      const hue = 190 + (vx / mag) * 30;
+      const sat = 52 + Math.abs(vy / mag) * 22;
+      const light = 50 + Math.abs(nx) * 12;
+
+      ctx.strokeStyle = `hsla(${hue},${sat}%,${light}%,${alpha})`;
+      ctx.lineWidth = 1.3;
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
-      p.x += nx * 2.8;
-      p.y += ny * 2.8;
+      p.x += nx * 3.0;
+      p.y += ny * 3.0;
       ctx.lineTo(p.x, p.y);
       ctx.stroke();
+
       if (p.x < -10 || p.x > W+10 || p.y < -10 || p.y > H+10) particles[i] = rp();
     }
     t += 0.007;
@@ -1097,16 +1006,15 @@
     window.addEventListener('resize', () => { resize(); init(); });
     init();
     draw();
-  } else {
-    canvas.style.display = 'none';
   }
 })();
 
+// ── SCROLL REVEAL ──
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
   });
-}, { threshold: 0.1 });
+}, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 
