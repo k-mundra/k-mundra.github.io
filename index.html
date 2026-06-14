@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kashvi Mundra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0B1120;
+      --bg-card:   #141e30;
+      --bg-hover:  #1a2740;
+      --white:     #F0F4FF;
+      --muted:     #8A9BB5;
+      --teal:      #4ECDC4;
+      --teal-dim:  rgba(78,205,196,0.12);
+      --amber:     #F5A623;
+      --border:    rgba(78,205,196,0.15);
+      --font-display: 'Space Mono', monospace;
+      --font-body:    'Inter', sans-serif;
+      --font-ui:      'Space Grotesk', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS HERO ── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #flowCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.45;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+      padding: 0 2rem;
+      text-align: left;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.2s;
+    }
+
+    .hero-name {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.35s;
+    }
+
+    .hero-desc {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 2.2rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.5s;
+    }
+
+    .hero-desc em {
+      color: var(--white);
+      font-style: normal;
+    }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.65s;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.55rem 1.1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: var(--bg);
+    }
+    .btn-primary:hover { background: #3db8b0; }
+
+    .btn-ghost {
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-family: var(--font-display);
+      letter-spacing: 0.12em;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 1s;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--teal), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(11,17,32,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(78,205,196,0.08);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      color: var(--teal);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--teal); }
+
+    /* ── SECTIONS ── */
+    section {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+    }
+
+    .section-label {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: var(--font-ui);
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 2.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-size: 0.97rem;
+    }
+
+    .about-text p em {
+      color: var(--white);
+      font-style: normal;
+    }
+
+    .about-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .meta-item {
+      padding: 1rem 1.2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .meta-label {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .meta-value {
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .meta-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    /* ── RESEARCH ── */
+    .research-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .research-card {
+      padding: 1.5rem 1.8rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .research-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--teal);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .research-card:hover {
+      border-color: rgba(78,205,196,0.35);
+      background: var(--bg-hover);
+    }
+    .research-card:hover::before { opacity: 1; }
+
+    .research-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .research-title {
+      font-family: var(--font-ui);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .research-date {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      color: var(--muted);
+      white-space: nowrap;
+      padding-top: 0.15rem;
+    }
+
+    .research-advisor {
+      font-size: 0.8rem;
+      color: var(--teal);
+      margin-bottom: 0.75rem;
+      font-family: var(--font-ui);
+    }
+
+    .research-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .research-desc em {
+      color: var(--white);
+      font-style: normal;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 1rem;
+    }
+
+    .tag {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--teal);
+      background: var(--teal-dim);
+      border: 1px solid rgba(78,205,196,0.2);
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+
+    .project-card {
+      padding: 1.4rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .project-card:hover {
+      border-color: rgba(78,205,196,0.35);
+      background: var(--bg-hover);
+      transform: translateY(-2px);
+    }
+
+    .project-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .project-icon {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .project-link-icon {
+      color: var(--muted);
+      font-size: 0.8rem;
+      transition: color 0.2s;
+    }
+    .project-card:hover .project-link-icon { color: var(--teal); }
+
+    .project-name {
+      font-family: var(--font-ui);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .project-desc {
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    /* ── PUBLICATIONS ── */
+    .pub-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .pub-item {
+      padding: 1.2rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .pub-type {
+      font-family: var(--font-display);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: var(--bg);
+      background: var(--teal);
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      white-space: nowrap;
+      margin-top: 0.1rem;
+    }
+
+    .pub-type.talk { background: var(--amber); }
+
+    .pub-title {
+      font-family: var(--font-ui);
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 0.2rem;
+    }
+
+    .pub-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .pub-meta a {
+      color: var(--teal);
+      text-decoration: none;
+    }
+    .pub-meta a:hover { text-decoration: underline; }
+
+    /* ── CONTACT ── */
+    .contact-inner {
+      text-align: center;
+      padding: 4rem 2rem 6rem;
+    }
+
+    .contact-inner .section-label {
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    .contact-title {
+      font-family: var(--font-ui);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .contact-sub {
+      font-size: 0.97rem;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 2.2rem;
+    }
+
+    .contact-email {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--teal);
+      text-decoration: none;
+      border-bottom: 1px solid var(--teal);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+    .contact-email:hover { opacity: 0.75; }
+
+    .social-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    .social-link {
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .social-link:hover { color: var(--teal); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      max-width: 820px;
+      margin: 0 auto;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; }
+      50%       { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .about-grid    { grid-template-columns: 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .nav-links     { display: none; }
+      .hero-name     { font-size: 2.2rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">km_</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="flowCanvas"></canvas>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">// physics-informed ML · inverse problems · surrogate modeling</p>
+    <h1 class="hero-name">Kashvi<br>Mundra</h1>
+    <p class="hero-desc">
+      MS student in <em>Computational Science & Engineering</em> at Georgia Tech.
+      I build ML systems that respect the physics — surrogates, inverse solvers,
+      and uncertainty-aware models for fluid dynamics and aerospace simulation.
+    </p>
+    <div class="hero-links">
+      <a class="btn btn-primary" href="mailto:kashvi@gatech.edu">Get in touch</a>
+      <a class="btn btn-ghost" href="#research">View research ↓</a>
+      <a class="btn btn-ghost" href="https://linkedin.com/in/kashvi-mundra" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-ghost" href="https://github.com/yourusername" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>scroll</span>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="section-label">// 01 — about</p>
+  <h2 class="section-title">Background</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        I'm a first-year MS/PhD student at Georgia Tech's School of Computational Science
+        & Engineering, where I work on <em>physics-informed machine learning and inverse problems</em>
+        under my advisor in the Pestourie Group.
+      </p>
+      <p>
+        My current research focuses on building latent-space inverse solvers for
+        Navier-Stokes flows — inferring initial conditions from final-state observations
+        using ML surrogates and optimization. Before this, I developed multifidelity
+        neural surrogate models using a <em>Kennedy-O'Hagan autoregressive framework</em>
+        extended with neural networks.
+      </p>
+      <p>
+        This summer I'm at <em>Boom Supersonic</em> as an Applied ML Engineering intern,
+        building surrogate models for 3D turbomachinery compressor CFD — evaluating
+        POD+DNN, transformer-based, and physics-informed architectures for rapid
+        design space exploration.
+      </p>
+    </div>
+    <div class="about-meta">
+      <div class="meta-item">
+        <div class="meta-label">Current role</div>
+        <div class="meta-value">Applied ML Engineering Intern</div>
+        <div class="meta-sub">Boom Supersonic · Denver, CO · Summer 2026</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Education</div>
+        <div class="meta-value">MS, Computational Science & Engineering</div>
+        <div class="meta-sub">Georgia Institute of Technology · GPA 3.75 · exp. May 2027</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Research group</div>
+        <div class="meta-value">Pestourie Group</div>
+        <div class="meta-sub">Inverse problems · Physics-informed ML · Navier-Stokes</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Fellowship</div>
+        <div class="meta-value">Contrary Research Fellow</div>
+        <div class="meta-sub">1 of ~12 selected from ~300 applicants · Deep tech & SciML</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- RESEARCH -->
+<section id="research">
+  <p class="section-label">// 02 — research</p>
+  <h2 class="section-title">Research</h2>
+  <div class="research-list">
+
+    <div class="research-card reveal">
+      <div class="research-header">
+        <div class="research-title">Latent-Space Inverse Solver for Navier-Stokes Flows</div>
+        <div class="research-date">Jan 2026 – Present</div>
+      </div>
+      <div class="research-advisor">Pestourie Group · Georgia Tech CSE</div>
+      <div class="research-desc">
+        Developing a <em>ViT-VAE with 8-dimensional latent space</em> to infer initial conditions
+        from final-state flow observations. The pipeline combines a neural surrogate
+        (val PSNR 43 dB) with global optimization — CRS2 and Bayesian optimization via Ax —
+        to solve the inverse problem without adjoint gradients. Training data generated with
+        <em>Dedalus</em> at Re=5000; spectral low-pass filtering for GRF initial condition generation.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Inverse Problems</span>
+        <span class="tag">ViT-VAE</span>
+        <span class="tag">Navier-Stokes</span>
+        <span class="tag">Bayesian Optimization</span>
+        <span class="tag">Dedalus</span>
+        <span class="tag">PyTorch</span>
+      </div>
+    </div>
+
+    <div class="research-card reveal">
+      <div class="research-header">
+        <div class="research-title">ML Surrogates for 3D Turbomachinery CFD</div>
+        <div class="research-date">Jun 2026 – Aug 2026</div>
+      </div>
+      <div class="research-advisor">Boom Supersonic · Applied ML Engineering Intern</div>
+      <div class="research-desc">
+        R&D on <em>scientific ML surrogate architectures</em> for 3D compressor flow prediction,
+        evaluating POD+DNN, transformer-based, and physics-informed models across accuracy
+        and data efficiency tradeoffs. Goal: replace expensive high-fidelity CFD simulations
+        to enable rapid design space exploration for supersonic propulsion systems.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Surrogate Modeling</span>
+        <span class="tag">CFD</span>
+        <span class="tag">POD+DNN</span>
+        <span class="tag">Transformers</span>
+        <span class="tag">Turbomachinery</span>
+      </div>
+    </div>
+
+    <div class="research-card reveal">
+      <div class="research-header">
+        <div class="research-title">Multifidelity Neural Surrogate Modeling</div>
+        <div class="research-date">Aug 2024 – Feb 2026</div>
+      </div>
+      <div class="research-advisor">Aerospace Computational Engineering Lab · Dr. Elizabeth Qian</div>
+      <div class="research-desc">
+        Developed and tuned multifidelity neural network models using a novel
+        <em>Kennedy-O'Hagan autoregressive framework</em> extended with neural networks,
+        validated on short column and Forrester benchmarks. Achieved up to
+        <em>90% reduction in generalization error</em> versus single-fidelity baseline.
+        PURA Salary Research Grant recipient; presented at two symposia.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Multifidelity</span>
+        <span class="tag">Kennedy-O'Hagan</span>
+        <span class="tag">Neural Surrogates</span>
+        <span class="tag">UQ</span>
+        <span class="tag">JAX</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- PROJECTS -->
+<section id="projects">
+  <p class="section-label">// 03 — projects</p>
+  <h2 class="section-title">Projects</h2>
+  <div class="projects-grid">
+
+    <a class="project-card reveal" href="https://github.com/iaziz6/Digital-Twin-for-Data-Center-Cooling" target="_blank" rel="noopener">
+      <div class="project-card-header">
+        <span class="project-icon">🌡️</span>
+        <span class="project-link-icon">↗</span>
+      </div>
+      <div class="project-name">Digital Twin for Data Center Cooling</div>
+      <div class="project-desc">
+        Physics-regularized 3D U-Net surrogate predicting full volumetric temperature
+        and velocity fields from CFD data, with Navier-Stokes soft PDE constraints and
+        uncertainty quantification via Monte Carlo Dropout and Deep Ensembles.
+      </div>
+      <div class="tag-row">
+        <span class="tag">3D U-Net</span>
+        <span class="tag">PINN</span>
+        <span class="tag">UQ</span>
+        <span class="tag">PyTorch</span>
+      </div>
+    </a>
+
+    <a class="project-card reveal" href="#" target="_blank" rel="noopener">
+      <div class="project-card-header">
+        <span class="project-icon">🦠</span>
+        <span class="project-link-icon">↗</span>
+      </div>
+      <div class="project-name">Space Biofilms: Microgravity ML Pipeline</div>
+      <div class="project-desc">
+        Experimental and modeling design for Earth-to-microgravity correlation.
+        Built data pipelines and ground-to-flight predictive ML pipeline (R²=0.96),
+        using ConvLSTM and Random Forest; presented at GT SciML Symposium.
+      </div>
+      <div class="tag-row">
+        <span class="tag">ConvLSTM</span>
+        <span class="tag">Random Forest</span>
+        <span class="tag">Microgravity</span>
+      </div>
+    </a>
+
+    <a class="project-card reveal" href="#" target="_blank" rel="noopener">
+      <div class="project-card-header">
+        <span class="project-icon">🚀</span>
+        <span class="project-link-icon">↗</span>
+      </div>
+      <div class="project-name">MIRAGE Mars Orbiter — C&DH Lead</div>
+      <div class="project-desc">
+        Full pre-phase comms and command/data handling system for Mars orbiter mission.
+        Developed MATLAB/Python pipelines, optimized C/N ratios, data rates, and
+        RF architecture for a 3-year mission under realistic link budget constraints.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Systems Design</span>
+        <span class="tag">RF/Comms</span>
+        <span class="tag">MATLAB</span>
+      </div>
+    </a>
+
+    <a class="project-card reveal" href="#" target="_blank" rel="noopener">
+      <div class="project-card-header">
+        <span class="project-icon">📡</span>
+        <span class="project-link-icon">↗</span>
+      </div>
+      <div class="project-name">Solar CME Geoeffectiveness Study</div>
+      <div class="project-desc">
+        First-authored published study examining coronal mass ejection storm risk
+        using H-α imagery and magnetic field orientation analysis.
+        Published in <em>The Astrophysical Journal Supplement Series</em>, 2021.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Solar Physics</span>
+        <span class="tag">First Author</span>
+        <span class="tag">ApJS</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <p class="section-label">// 04 — publications & presentations</p>
+  <h2 class="section-title">Publications & Presentations</h2>
+  <div class="pub-list">
+
+    <div class="pub-item reveal">
+      <span class="pub-type">PAPER</span>
+      <div>
+        <div class="pub-title">Using CME Progenitors to Assess CME Geoeffectiveness</div>
+        <div class="pub-meta">
+          <strong>Kashvi Mundra</strong> et al. ·
+          <em>The Astrophysical Journal Supplement Series</em>, 257, 33 · 2021 ·
+          <a href="https://doi.org/10.3847/1538-4365/ac2203" target="_blank" rel="noopener">doi:10.3847/1538-4365/ac2203</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pub-item reveal">
+      <span class="pub-type talk">TALK</span>
+      <div>
+        <div class="pub-title">Multifidelity Neural Surrogate Modeling with Kennedy-O'Hagan Extensions</div>
+        <div class="pub-meta">
+          Kashvi Mundra · Georgia Scientific Computing Symposium · Atlanta, GA · 2025
+        </div>
+      </div>
+    </div>
+
+    <div class="pub-item reveal">
+      <span class="pub-type talk">POSTER</span>
+      <div>
+        <div class="pub-title">Multifidelity Neural Surrogate Modeling with Kennedy-O'Hagan Extensions</div>
+        <div class="pub-meta">
+          Kashvi Mundra · Georgia Tech Undergraduate Research Symposium · Atlanta, GA · 2025
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- CONTACT -->
+<div id="contact" class="contact-inner reveal">
+  <span class="section-label">// 05 — contact</span>
+  <h2 class="contact-title">Let's talk.</h2>
+  <p class="contact-sub">
+    I'm open to research collaborations, internship opportunities, and conversations
+    about SciML, inverse problems, and scientific computing.
+  </p>
+  <a class="contact-email" href="mailto:kashvi@gatech.edu">kashvi@gatech.edu</a>
+  <div class="social-row">
+    <a class="social-link" href="https://linkedin.com/in/kashvi-mundra" target="_blank" rel="noopener">LinkedIn ↗</a>
+    <a class="social-link" href="https://github.com/yourusername" target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="social-link" href="#" target="_blank" rel="noopener">CV (PDF) ↗</a>
+  </div>
+</div>
+
+<footer>
+  kashvi mundra · georgia tech cse · built with html/css/js
+</footer>
+
+<!-- FLOW FIELD CANVAS -->
+<script>
+(function() {
+  const canvas = document.getElementById('flowCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animId;
+  const N = 180;
+  const SPEED = 0.6;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function noise(x, y, t) {
+    // Smooth curl-ish noise approximation
+    const s = 0.003;
+    const freq = 1.8;
+    return Math.sin(x * s * freq + t * 0.22) * Math.cos(y * s + t * 0.15)
+         + Math.sin(x * s * 0.7 - y * s * 1.1 + t * 0.18) * 0.5;
+  }
+
+  function curl(x, y, t) {
+    const eps = 1.5;
+    const n1 = noise(x, y + eps, t);
+    const n2 = noise(x, y - eps, t);
+    const n3 = noise(x + eps, y, t);
+    const n4 = noise(x - eps, y, t);
+    return {
+      vx:  (n1 - n2) / (2 * eps),
+      vy: -(n3 - n4) / (2 * eps)
+    };
+  }
+
+  function randomParticle() {
+    return {
+      x:    Math.random() * W,
+      y:    Math.random() * H,
+      life: Math.random() * 180 + 60,
+      age:  Math.floor(Math.random() * 120),
+      speed: SPEED * (0.7 + Math.random() * 0.7)
+    };
+  }
+
+  function init() {
+    particles = Array.from({ length: N }, randomParticle);
+  }
+
+  let t = 0;
+  function draw() {
+    ctx.fillStyle = 'rgba(11,17,32,0.15)';
+    ctx.fillRect(0, 0, W, H);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.age++;
+      if (p.age > p.life) { particles[i] = randomParticle(); continue; }
+
+      const { vx, vy } = curl(p.x, p.y, t);
+      const mag = Math.sqrt(vx * vx + vy * vy) || 1;
+      const nx = (vx / mag) * p.speed;
+      const ny = (vy / mag) * p.speed;
+
+      const alpha = Math.min(p.age / 30, 1) * (1 - p.age / p.life) * 0.7;
+      // Color gradient from teal to a slightly warmer hue based on speed direction
+      const hue = 175 + (vx / mag) * 18;
+      ctx.strokeStyle = `hsla(${hue}, 60%, 62%, ${alpha})`;
+      ctx.lineWidth = 0.9;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      p.x += nx * 2.5;
+      p.y += ny * 2.5;
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+
+      if (p.x < 0 || p.x > W || p.y < 0 || p.y > H) {
+        particles[i] = randomParticle();
+      }
+    }
+
+    t += 0.008;
+    animId = requestAnimationFrame(draw);
+  }
+
+  // Respect reduced motion
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReduced) {
+    resize();
+    window.addEventListener('resize', () => { resize(); init(); });
+    init();
+    draw();
+  } else {
+    canvas.style.display = 'none';
+  }
+})();
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
