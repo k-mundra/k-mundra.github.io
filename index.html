@@ -430,6 +430,13 @@
        MOBILE  (≤ 560px)
     ════════════════════════════════════════ */
     @media (max-width: 560px) {
+      /* Force hero visible — Safari sometimes won't fire CSS animations on load */
+      .hero-eyebrow, .hero-name, .hero-desc, .hero-links, .hero-photo-wrap {
+        opacity: 1 !important;
+        animation: none !important;
+        transform: none !important;
+      }
+
       nav { padding: 0.9rem 1.2rem; }
 
       .hero-inner { padding: 7rem 1.2rem 3rem; gap: 1.5rem; }
@@ -541,7 +548,7 @@
     </div>
     <div class="hero-photo-wrap">
       <div class="hero-photo-frame">
-        <img src="kashvi_pfp.png" alt="Kashvi Mundra" />
+        <img src="kashvi_pfp.jpeg" alt="Kashvi Mundra" />
       </div>
     </div>
   </div>
